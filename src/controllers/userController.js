@@ -35,4 +35,34 @@ const createUser = async function (req, res) {
     }
 }
 
-module.exports = { createUser };
+
+const getUserProfile = async function(req,res)
+{
+    try{
+        let data = req.query;
+        let userId = data._id
+        const userDetails = await userModel
+        .find({userId })
+        .select({address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1})
+        
+        if(userDetails.length == 0)
+        {
+            return res.status(404).send({status: false, msg: "No User Found"})
+        }
+
+        if(userDetails.length > 0)
+        {
+            return res.status(200).send({status: true, message: "User Profile Details", data: userDetails})
+        }
+        else
+        {
+            return res.status(404).send({status: false, message: "No User Found"})
+        }
+    }
+    catch(err){
+        return res.status(500).send({status: false, message: err.message})
+    }
+}
+
+
+module.exports = { createUser, getUserProfile };
