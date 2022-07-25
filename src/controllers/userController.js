@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
 const { uploadFile } = require('../middleWare/fileUpload');
 
 
@@ -34,15 +35,19 @@ const createUser = async function (req, res) {
 
     }
 }
+// const loginUser = async function(req,res){
+//     try{
+//     let email = req.body.email
+//     let password = req.body.password
 
 
 const getUserProfile = async function(req,res)
 {
     try{
-        let data = req.query;
-        let userId = data._id
+        //let data = req.query.params;
+        let userId = req.params.userId
         const userDetails = await userModel
-        .find({userId })
+        .find({_id: userId})
         .select({address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1})
         
         if(userDetails.length == 0)
@@ -66,3 +71,31 @@ const getUserProfile = async function(req,res)
 
 
 module.exports = { createUser, getUserProfile };
+//     let findUser = await userModel.findOne({email:email})
+//     if(!findUser) return res.status(404).send({status:false,msg:'invalid emailId'})
+//     let hashPass = findUser.password
+//     let userId = findUser._id.toString()
+//     let compare = await bcrypt.compare(password,hashPass)
+//     if(!compare) {
+//         return res.status(400).send({status:false,msg:'password is incorrect'})
+//     }else{
+//         let token = jwt.sign({
+//             id: userId,
+//             batch: "radon",
+//             organization: "functionUp"
+//         }, "GroupNo-61", { expiresIn: '1h' })
+//         return res.status(200).send({status:true,UserId:userId,token:token})
+
+//     }
+//     }catch(err){
+//         return res.status(500).send(err.message)
+//     }
+// }
+/******
+split
+1th index
+ * ********* */
+//req.headers['authorization']
+
+
+//module.exports = { createUser,loginUser };

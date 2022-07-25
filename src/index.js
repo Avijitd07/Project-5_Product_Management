@@ -12,11 +12,12 @@ mongoose.connect("mongodb+srv://anik2310:anik123@cluster0.tby9aun.mongodb.net/gr
 { useNewUrlParser: true }
 )
 
-.then(() => console.log("MongoDb is connected"))
+.then(() => console.log("MongoDb is connected🙏🙏"))
 .catch(err => console.log(err))
 
 app.use('/', route)
+let PORT = process.env.PORT || 3000
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log('Express app running on port ' + (process.env.PORT || 3000))
+app.listen(PORT, function () {
+    console.log(`Express app running on port ${PORT} 😍😍` )
 })
