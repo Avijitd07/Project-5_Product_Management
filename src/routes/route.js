@@ -5,12 +5,12 @@ const middleware = require("../middleWare/auth")
 const router = express.Router(); 
 
 router.post("/register", controllers.createUser)
-router.get("/user/:userId/profile",/*middleware.authorization,*/controllers.getUserProfile)
-//const { createUser, loginUser }= require('../controllers/userController');
+router.post('/login',controllers.loginUser)
+router.get("/user/:userId/profile",middleware.authorization,controllers.getUserProfile)
 
 
+router.all('/**', (req,res)=>{
+    return res.status(404).send({msg:'The requested api is invalid'})
 
-//router.post("/register", createUser)
-//router.post('/login',loginUser)
-
+})
 module.exports = router;

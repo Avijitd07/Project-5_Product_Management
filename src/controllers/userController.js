@@ -12,17 +12,19 @@ const createUser = async function (req, res) {
             // res.send the link back to frontend/postman
             var uploadedFileURL = await uploadFile(files[0])
             //res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
-           
+
         }
         else {
             res.status(400).send({ msg: "No file found" })
         }
         let body = req.body;
         let { fname, lname, email, phone, address, password } = body;
-        
+        const hashPass = await bcrypt.hash(password, 10)
+        password = hashPass
+        address = JSON.parse(address)
 
         let profileImage = uploadedFileURL;
-        let validUserData = {fname, lname, email, profileImage, phone, address, password}
+        let validUserData = { fname, lname, email, profileImage, phone, address, password }
 
         validUserData.profileImage = profileImage
 
@@ -35,67 +37,54 @@ const createUser = async function (req, res) {
 
     }
 }
-// const loginUser = async function(req,res){
-//     try{
-//     let email = req.body.email
-//     let password = req.body.password
-
-
-const getUserProfile = async function(req,res)
-{
-    try{
-        //let data = req.query.params;
-        let userId = req.params.userId
-        const userDetails = await userModel
-        .find({_id: userId})
-        .select({address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1})
-        
-        if(userDetails.length == 0)
-        {
-            return res.status(404).send({status: false, msg: "No User Found"})
-        }
-
-        if(userDetails.length > 0)
-        {
-            return res.status(200).send({status: true, message: "User Profile Details", data: userDetails})
-        }
-        else
-        {
-            return res.status(404).send({status: false, message: "No User Found"})
-        }
-    }
-    catch(err){
-        return res.status(500).send({status: false, message: err.message})
+const loginUser = async function (req, res) {
+    try {
+        let email = req.body.email
+        let password = req.body.password
+        if(!email) return res.status(400).send({status:false,message:'email must be present'})
+        if(!password) return res.status(400).send({status:false,message:'password must be present'})
+        let findUser = await userModel.findOne({ email: email })
+        if (!findUser) return res.status(404).send({ status: false, msg: 'invalid emailId' })
+        let hashPass = findUser.password
+        let userId = findUser._id.toString()
+        let compare = await bcrypt.compare(password,hashPass)
+        if (!compare) return res.status(400).send({ status: false, msg: 'password is incorrect' })
+        let token = jwt.sign({
+            id: userId,
+            batch: "radon",
+            organization: "functionUp"
+        }, "GroupNo-61", { expiresIn: '1h' })
+        return res.status(200).send({ status: true, UserId: userId, token: token })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send(err.message)
     }
 }
 
 
-module.exports = { createUser, getUserProfile };
-//     let findUser = await userModel.findOne({email:email})
-//     if(!findUser) return res.status(404).send({status:false,msg:'invalid emailId'})
-//     let hashPass = findUser.password
-//     let userId = findUser._id.toString()
-//     let compare = await bcrypt.compare(password,hashPass)
-//     if(!compare) {
-//         return res.status(400).send({status:false,msg:'password is incorrect'})
-//     }else{
-//         let token = jwt.sign({
-//             id: userId,
-//             batch: "radon",
-//             organization: "functionUp"
-//         }, "GroupNo-61", { expiresIn: '1h' })
-//         return res.status(200).send({status:true,UserId:userId,token:token})
+const getUserProfile = async function (req, res) {
+    try {
+        //let data = req.query.params;
+        let userId = req.params.userId
+        const userDetails = await userModel
+            .find({ _id: userId })
+            .select({ address: 1, _id: 1, fname: 1, lname: 1, email: 1, profileImage: 1, phone: 1, password: 1, createdAt: 1, updatedAt: 1 })
 
-//     }
-//     }catch(err){
-//         return res.status(500).send(err.message)
-//     }
-// }
-/******
-split
-1th index
- * ********* */
-//req.headers['authorization']
+        if (userDetails.length == 0) {
+            return res.status(404).send({ status: false, msg: "No User Found" })
+        }
+
+        if (userDetails.length > 0) {
+            return res.status(200).send({ status: true, message: "User Profile Details", data: userDetails })
+        }
+        else {
+            return res.status(404).send({ status: false, message: "No User Found" })
+        }
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+    }
+}
 
 
-//module.exports = { createUser,loginUser };
+module.exports = { createUser, getUserProfile, loginUser };
