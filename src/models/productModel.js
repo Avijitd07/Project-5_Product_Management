@@ -37,13 +37,15 @@ const productSchema = new mongoose.Schema({
                 required:true
         },  // s3 link
         style: {
-                type : String
+                type : String,
+                trim : true,
         },
         availableSizes: {
                 type : [String]
         },
         installments: {
-                type:Number
+                type:Number,
+                trim : true
         },
         deletedAt: {
                 type :Date,
