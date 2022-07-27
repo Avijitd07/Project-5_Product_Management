@@ -158,7 +158,7 @@ const createUser = async function (req, res) {
         //validUserData.profileImage = profileImage
 
         let userdata = await userModel.create(validUserData);
-        return res.status(201).send({ status: true, data: userdata });
+        return res.status(201).send({ status: true,message:'User Created Successfully',data: userdata });
 
     } catch (error) {
         return res.status(500).send({ status: false, message: error.message });
