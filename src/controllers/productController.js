@@ -66,9 +66,19 @@ const createProduct = async function (req, res) {
             return res.status(400).send({ status: false, message: "currencyFormat is Required" })
         }
         currencyFormat = currencyFormat.trim();
-        if (!isValid(availableSizes)) {
-            return res.status(400).send({ status: false, message: "availableSizes is Required" })
+        
+        if(availableSizes){
+            if (!isValid(availableSizes)) {
+                return res.status(400).send({ status: false, message: "availableSizes is Required" })
+            }
+            availableSizes = JSON.parse(availableSizes)
+
         }
+       
+        // console.log(availableSizes)
+        // availableSizes = {$all:availableSizes.split(',')}
+        // console.log(availableSizes)
+        //availableSizes = JSON.parse(availableSizes)
         // availableSizes = availableSizes.trim();
 
         // if (!phoneRegex.test(phone)) return res.status(400).send({ status: false, message: "Phone is not valid, enter a valid phone number" })
@@ -83,35 +93,23 @@ const createProduct = async function (req, res) {
             return res.status(404).send({ status: false, msg: `This title is already in use` })
         }
 
-        //address
-        // if (!isValid(body.style)) {
-        //     return res.status(400).send({ status: false, message: "Address is Required" })
-        // }
 
-        // //shipping------->
-        // if (!isValid(body.installments)) {
-        //     return res.status(400).send({ status: false, message: "Shipping is Required" })
-        // }
-
-
-        let validUserData = { title, description, price, currencyId, productImage, currencyFormat, availableSizes }
+        let validProductData = { title, description, price, currencyId, productImage, currencyFormat }
         if (body.style) {
             if (!isValid(body.style)) {
                 return res.status(400).send({ status: false, message: "style is Required" })
             }
-            validUserData.style = body.style
+            validProductData.style = body.style
         }
         if (body.installments) {
             if (!isValid(body.installments)) {
                 return res.status(400).send({ status: false, message: "installments is Required" })
             }
-            validUserData.installments = body.installments
+            validProductData.installments = body.installments
         }
-
         if (!isValid(productImage)) return res.status(400).send({ status: false, message: "Product image is required" })
 
-
-        let productdata = await productModel.create(validUserData);
+        let productdata = await productModel.create(validProductData);
         return res.status(201).send({ status: true, message: 'Product created Successfully', data: productdata });
     } catch (err) {
         return res.status(500).send(err.message)
