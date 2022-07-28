@@ -228,7 +228,7 @@ const getUser = async function (req, res) {
 }
 
 
-// Update User --------> 
+//Update User --------> 
 const updateUser = async function (req, res) {
     let userId = req.params.userId
     //if (!objectId.isValid(userId)) return res.status(400).send({ status: false, message: "Invalid userId" });
@@ -374,5 +374,6 @@ const updateUser = async function (req, res) {
     return res.status(200).send({ status: true, message: "User profile updated", data: updatedData })
 
 }
+
 
 module.exports = { createUser, loginUser, getUser, updateUser };
