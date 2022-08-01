@@ -1,6 +1,6 @@
 const productModel = require('../models/productModel')
 const { uploadFile } = require('../middleWare/fileUpload');
-
+const objectId = require('mongoose').Types.ObjectId
 
 const isValid = function (val) {
     if (typeof val === "undefined" || val === null) return false;
